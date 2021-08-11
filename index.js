@@ -7,12 +7,24 @@ const http  = require('http');
 const { resolve } = require('path');
 const url = `http://54.85.49.75:3001/locations`
 const axios = require('axios')
+import {ApolloClient, InMemoryCache} from '@apollo/client';
+import { useQuery} from "@apollo/client";
+import { GET_LOCATIONS  } from '/Graphql/Querys';
+
+const client = new ApolloClient({
+    uri:"http://34.72.29.68:80/graphql",
+    cache: new InMemoryCache(),
+});
+
 
 async function getLocation(args) {
     var result = []
-    let res = await axios.get(`${url}/${args.message}.json`);
-    let data = res.data
-    let response = "latitude: "+ data.latitude +" longitude: "+ data.longitude 
+    const data = useQuery(GET_LOCATIONS,{
+        variables: {
+            id: parseInt(args)
+        }
+    })
+    let response = "latitude: "+ data.loc_location.latitude +" longitude: "+ data.loc_location.longitude
     result.push(response);
     return {
         result: result
