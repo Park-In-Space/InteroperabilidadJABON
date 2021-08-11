@@ -1,5 +1,5 @@
 "use strict";
-
+const fetch = require("cross-fetch");
 var soap = require('soap');
 var express = require('express');
 var fs = require('fs');
@@ -7,14 +7,25 @@ const http  = require('http');
 const { resolve } = require('path');
 const url = `http://54.85.49.75:3001/locations`
 const axios = require('axios')
-import {ApolloClient, InMemoryCache} from '@apollo/client';
-import { useQuery} from "@apollo/client";
-import { GET_LOCATIONS  } from '/Graphql/Querys';
+const {ApolloClient, InMemoryCache, HttpLink} = require('@apollo/client');
+const  { useQuery} = require('@apollo/client');
+
+const { gql} = require('@apollo/client');
 
 const client = new ApolloClient({
-    uri:"http://34.72.29.68:80/graphql",
+    link: new HttpLink({uri:"http://34.72.29.68:80/graphql",fetch}),
     cache: new InMemoryCache(),
 });
+
+
+const GET_LOCATIONS = gql;`
+    query loc_location($id: Int!){
+        loc_location(id:$id){
+            latitude
+            longitude
+        }
+    }
+`;
 
 
 async function getLocation(args) {
